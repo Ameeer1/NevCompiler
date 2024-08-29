@@ -1,5 +1,7 @@
 module main
 
 fn main() {
-	tokenize("hello world")
+	println(tokenize("
+fun main -> print(ln())
+		"))
 }

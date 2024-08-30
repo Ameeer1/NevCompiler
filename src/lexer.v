@@ -4,6 +4,8 @@ enum TokenType {
 	identifier
 	variable
 	constant
+	open
+	as_sign
 	function_sign
 	public_sign
 	enum_sign
@@ -13,9 +15,12 @@ enum TokenType {
 	else_sign
 	match_sign
 	return_sign
-	open_scope
+	colon
 	dot
+	comma
+	open_scope
 	equal_to
+	not
 	greater_than_or_equal_to
 	less_than_or_equal_to
 	greater_than
@@ -42,13 +47,15 @@ struct LexerInfo {
 	num_chars []rune = "1234567890".runes()
 	num_signs []rune = "_.".runes()
 
-	alphabet []rune = "abcdefghijklmnopqrstuvwxyz".runes()
+	alphabet []rune = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_".runes()
 
 	str_corners []rune = "'\"".runes()
 
 	dictionary map[string]TokenType = {
 		"var": .variable
 		"val": .constant
+		"open": .open
+		"as": .as_sign
 		"fun": .function_sign
 		"pub": .public_sign
 		"enum": .enum_sign
@@ -58,7 +65,9 @@ struct LexerInfo {
 		"else": .else_sign
 		"match": .match_sign
 		"return": .return_sign
+		":": .colon
 		".": .dot
+		",": .comma
 		"->": .open_scope
 		"==": .equal_to
 		">=": .greater_than_or_equal_to
@@ -66,6 +75,7 @@ struct LexerInfo {
 		">": .greater_than
 		"<": .less_than
 		"=": .equal
+		"!": .not
 		"+": .binary_operator
 		"-": .binary_operator
 		"/": .binary_operator
@@ -86,6 +96,7 @@ fn tokenize(code string) []Token {
 	mut i := 0
 
 	in_code: for {
+		println(i)
 		if i >= code.len {
 			break in_code
 		}

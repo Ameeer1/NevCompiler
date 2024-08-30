@@ -44,6 +44,8 @@ struct LexerInfo {
 
 	alphabet []rune = "abcdefghijklmnopqrstuvwxyz".runes()
 
+	str_corners []rune = "'\"".runes()
+
 	dictionary map[string]TokenType = {
 		"var": .variable
 		"val": .constant
@@ -116,13 +118,13 @@ fn tokenize(code string) []Token {
 		mut id_char_i := 1
 		if code[i] in lexer_info.alphabet {
 			ident += code[i].ascii_str()
-			in_text: for {
+			in_ident: for {
 				if i + id_char_i < code.len &&
 					(code[i + id_char_i] in lexer_info.alphabet ||
 					code[i + id_char_i] in lexer_info.num_chars) {
 					ident += code[i + id_char_i].ascii_str()
 					id_char_i++
-				} else { break in_text }
+				} else { break in_ident }
 			}
 			result << Token {
 				start: i
@@ -154,6 +156,31 @@ fn tokenize(code string) []Token {
 				token_type: .number
 			}
 			i += num_char_index
+			continue in_code
+		}
+
+
+		mut text := ""
+		mut txt_char_i := 1
+		mut str_corner := '"'
+		if code[i] in lexer_info.str_corners {
+			str_corner = code[i].ascii_str()
+			in_text: for {
+				if i + txt_char_i < code.len &&
+					code[i + txt_char_i].ascii_str() != str_corner {
+					text += code[i + txt_char_i].ascii_str()
+					txt_char_i++
+				} else {
+					break in_text
+				}
+			}
+			result << Token {
+				start: i
+				end: i + txt_char_i
+				value: text
+				token_type: .text
+			}
+			i += txt_char_i + 1
 			continue in_code
 		}
 	}

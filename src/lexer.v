@@ -37,7 +37,7 @@ struct Token {
 }
 
 struct LexerInfo {
-	ignore []rune = "\r\n ".runes()
+	ignore []rune = "\r\n\t ".runes()
 
 	num_chars []rune = "1234567890".runes()
 	num_signs []rune = "_.".runes()
@@ -81,21 +81,25 @@ struct LexerInfo {
 fn tokenize(code string) []Token {
 	mut result := []Token{}
 	lexer_info := LexerInfo {}
-	//code := source.runes()
 	mut i := 0
 
 	in_code: for {
+		if i >= code.len {
+			break in_code
+		}
+
 		//check if its not impodtant character or no
 		for skipable in lexer_info.ignore {
 			if skipable == code[i] {
-				i += i
+				i += 1
 				continue in_code
 			}
 		}
 
 		// compare with keywords
 		for key in lexer_info.dictionary.keys() {
-			if code[i..i + key.len] == key {
+			if i + key.len <= code.len &&
+				code[i..i + key.len] == key {
 				result << Token {
 					start: i
 					end: i + key.len
@@ -108,25 +112,25 @@ fn tokenize(code string) []Token {
 		}
 
 		// habdle identifier
-		mut text := ""
-		mut txt_char_index := 1
+		mut ident := ""
+		mut id_char_i := 1
 		if code[i] in lexer_info.alphabet {
-			text += code[i].str()
+			ident += code[i].ascii_str()
 			in_text: for {
-				if (code[i + txt_char_index] in lexer_info.alphabet ||
-					code[i + txt_char_index] in lexer_info.num_chars) &&
-					i <= code.len {
-					text += code[i + txt_char_index].str()
-					txt_char_index++
+				if i + id_char_i < code.len &&
+					(code[i + id_char_i] in lexer_info.alphabet ||
+					code[i + id_char_i] in lexer_info.num_chars) {
+					ident += code[i + id_char_i].ascii_str()
+					id_char_i++
 				} else { break in_text }
 			}
 			result << Token {
 				start: i
-				end: i + txt_char_index
-				value: text
-				token_type: .text
+				end: i + id_char_i
+				value: ident
+				token_type: .identifier
 			}
-			i += txt_char_index
+			i += id_char_i
 			continue in_code
 		}
 
@@ -134,12 +138,12 @@ fn tokenize(code string) []Token {
 		mut number := ""
 		mut num_char_index := 1
 		if code[i] in lexer_info.num_chars {
-			number += code[i].str()
+			number += code[i].ascii_str()
 			in_number: for {
-				if (code[i + num_char_index] in lexer_info.num_chars ||
-					code[i + num_char_index] in lexer_info.num_signs) &&
-					i <= code.len {
-					number += code[i + num_char_index].str()
+				if i + num_char_index < code.len &&
+					(code[i + num_char_index] in lexer_info.num_chars ||
+					code[i + num_char_index] in lexer_info.num_signs) {
+					number += code[i + num_char_index].ascii_str()
 					num_char_index++
 				} else { break in_number}
 			}

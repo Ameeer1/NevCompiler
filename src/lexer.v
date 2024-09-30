@@ -2,31 +2,36 @@ enum TokenType {
 	number
 	text
 	identifier
-	variable
-	constant
-	open
+
+	declare_var
+	double_colon
+	mutabel
+	use_library
 	as_sign
-	function_sign
-	public_sign
 	enum_sign
-	tag_sign
-	class_sign
+	param_sign
+	type_sign
 	if_sign
 	else_sign
 	match_sign
 	return_sign
+
+	equal
 	colon
 	dot
 	comma
 	open_scope
+	pipe
 	equal_to
-	not
+
 	greater_than_or_equal_to
 	less_than_or_equal_to
 	greater_than
 	less_than
-	equal
+	not
+
 	binary_operator
+
 	open_round_bracket
 	close_round_bracket
 	open_curly_bracket
@@ -52,35 +57,40 @@ struct LexerInfo {
 	str_corners []rune = "'\"".runes()
 
 	dictionary map[string]TokenType = {
-		"var": .variable
-		"val": .constant
-		"open": .open
+		":=": .declare_var
+		"::": .double_colon
+		"mut": .mutabel
+		"use": .use_library
 		"as": .as_sign
-		"fun": .function_sign
-		"pub": .public_sign
 		"enum": .enum_sign
-		"tag": .tag_sign
-		"class": .class_sign
+		"param": .param_sign
+		"type": .type_sign
 		"if": .if_sign
 		"else": .else_sign
 		"match": .match_sign
 		"return": .return_sign
+
+		"=": .equal
 		":": .colon
 		".": .dot
 		",": .comma
-		"->": .open_scope
+		"=>": .open_scope
+		"|>": .pipe
+
 		"==": .equal_to
 		">=": .greater_than_or_equal_to
 		"<=": .less_than_or_equal_to
 		">": .greater_than
 		"<": .less_than
-		"=": .equal
 		"!": .not
+
+		"%": .binary_operator
+		"**": .binary_operator
 		"+": .binary_operator
 		"-": .binary_operator
-		"/": .binary_operator
 		"*": .binary_operator
-		"^": .binary_operator
+		"/": .binary_operator
+
 		"(": .open_round_bracket
 		")": .close_round_bracket
 		"{": .open_curly_bracket
